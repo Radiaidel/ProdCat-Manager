@@ -5,4 +5,6 @@ import com.aidar.prodcat.dtos.User.UserResponseDTO;
 
 public interface UserService {
     UserResponseDTO registerNewUser(UserRequestDTO userDtoRequest);
+
+    UserResponseDTO loginUser(UserRequestDTO loginRequest);
 }

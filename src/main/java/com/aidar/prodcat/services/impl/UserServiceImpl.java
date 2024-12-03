@@ -9,6 +9,8 @@ import com.aidar.prodcat.models.User;
 import com.aidar.prodcat.repository.UserRepository;
 import com.aidar.prodcat.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +46,20 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toResponse(savedUser);
+    }
+
+    @Override
+    public UserResponseDTO loginUser(UserRequestDTO loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new  BadCredentialsException("No user found with this email"));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        if (!user.getActive()== true) {
+            throw new BadCredentialsException("User account is not active");
+        }
+
+        return userMapper.toResponse(user);
     }
 }
