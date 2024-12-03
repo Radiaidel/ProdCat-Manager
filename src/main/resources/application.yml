@@ -5,5 +5,6 @@ spring:
     password: aidar
   jpa:
     hibernate:
-      ddl-auto: update # or 'create' or 'validate'
+      ddl-auto: update # ou 'create' ou 'validate'
     show-sql: true
+  debug: true
