@@ -10,12 +10,13 @@ import com.aidar.prodcat.repository.UserRepository;
 import com.aidar.prodcat.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -62,4 +63,23 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.toResponse(user);
     }
+
+    @Override
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserResponseDTO updateUserRole(Long id, String role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRoles(Collections.singleton(Role.builder().name("User").build()));
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toResponse(updatedUser);
+    }
+
 }
