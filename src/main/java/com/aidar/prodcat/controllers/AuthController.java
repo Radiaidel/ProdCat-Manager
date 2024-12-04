@@ -22,8 +22,6 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(
