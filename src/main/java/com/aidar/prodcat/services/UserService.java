@@ -7,9 +7,9 @@ import com.aidar.prodcat.models.User;
 import java.util.List;
 
 public interface UserService {
-    UserResponseDTO registerNewUser(UserRequestDTO userDtoRequest);
-
-    UserResponseDTO loginUser(UserRequestDTO loginRequest);
+//    UserResponseDTO registerNewUser(UserRequestDTO userDtoRequest);
+//
+//    UserResponseDTO loginUser(UserRequestDTO loginRequest);
 
     List<UserResponseDTO> getAllUsers();
 

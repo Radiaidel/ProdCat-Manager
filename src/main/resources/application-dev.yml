@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+  security:
+    jdbc:
+      authentication:
+        enabled: false
+logging:
+  level:
+    org.springframework.security: DEBUG

@@ -13,6 +13,5 @@ public interface UserMapper {
     User toEntity(UserRequestDTO userRequestDTO);
 
 
-    @Mapping(target = "roles", expression = "java(user.getRoles().stream().map(role -> role.getName()).collect(java.util.stream.Collectors.toList()))")
     UserResponseDTO toResponse(User user);
 }

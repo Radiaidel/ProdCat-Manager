@@ -1,5 +1,6 @@
 package com.aidar.prodcat.models;
 
+import com.aidar.prodcat.models.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,10 +32,9 @@ public class User {
     private Boolean active;
 
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Collection<Role> roles = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
 
 }

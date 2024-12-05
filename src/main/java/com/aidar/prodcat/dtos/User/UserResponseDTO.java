@@ -1,6 +1,7 @@
 package com.aidar.prodcat.dtos.User;
 
 
+import com.aidar.prodcat.models.enums.Role;
 import lombok.*;
 
 import java.util.List;
@@ -14,6 +15,6 @@ public class UserResponseDTO {
 
     private Long id;
     private String email;
-    private List<String> roles;
+    private Role role;
     private Boolean active;
 }
