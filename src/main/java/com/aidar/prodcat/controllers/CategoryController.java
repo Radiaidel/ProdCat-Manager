@@ -45,13 +45,13 @@ public class CategoryController {
     }
 
     @PostMapping("/admin/categories")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDTO> addCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.addCategory(categoryRequestDTO));
     }
 
     @PutMapping("/admin/categories/{categoryId}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryResponseDTO> updateCategory(
             @PathVariable Long categoryId,
             @RequestBody CategoryRequestDTO categoryRequestDTO) throws Exception {
@@ -59,7 +59,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
         categoryService.deleteCategory(categoryId);
         return ResponseEntity.noContent().build();

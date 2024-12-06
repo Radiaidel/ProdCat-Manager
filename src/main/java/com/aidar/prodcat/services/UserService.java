@@ -7,11 +7,12 @@ import com.aidar.prodcat.models.User;
 import java.util.List;
 
 public interface UserService {
-//    UserResponseDTO registerNewUser(UserRequestDTO userDtoRequest);
-//
-//    UserResponseDTO loginUser(UserRequestDTO loginRequest);
 
     List<UserResponseDTO> getAllUsers();
 
     UserResponseDTO updateUserRole(Long id, String role);
+
+    void saveUser(User user);
+    boolean existsByUsername(String username);
+
 }

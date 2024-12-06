@@ -1,34 +1,87 @@
 package com.aidar.prodcat.controllers;
 
+import com.aidar.prodcat.dtos.User.UserRequestDTO;
+import com.aidar.prodcat.mappers.UserMapper;
+import com.aidar.prodcat.models.User;
 import com.aidar.prodcat.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@AllArgsConstructor
+@Slf4j
 public class AuthController {
-    @Autowired
-    private UserService userService;
+
+    private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody UserRequestDTO userDTO) {
+        if (userService.existsByUsername(userDTO.getUsername())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Username is already taken.");
+        }
+
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        User user = userMapper.toEntity(userDTO);
+        user.setActive(true);
+
+        userService.saveUser(user);
+        log.info("User registered successfully with username: {}", userDTO.getUsername());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("User registered successfully.");
+    }
 
 
-//    @PostMapping("/register")
-//    public ResponseEntity<UserResponseDTO> registerUser(
-//            @Valid @RequestBody UserRequestDTO userDtoRequest
-//    ) {
-//        UserResponseDTO registeredUser = userService.registerNewUser(userDtoRequest);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
-//    }
-//
-//    @PostMapping("/login")
-//    public ResponseEntity<?> login(@Valid @RequestBody UserRequestDTO loginRequest) {
-//        try {
-//            UserResponseDTO userResponse = userService.loginUser(loginRequest);
-//            return ResponseEntity.ok(userResponse);
-//        } catch (BadCredentialsException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(Map.of("message", e.getMessage()));
-//        }
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody @Validated UserRequestDTO loginRequest, HttpServletRequest request) {
+        try {
+            request.getSession(false);
+            request.getSession(true);
+
+            var authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            request.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+            log.info("User logged in successfully: {}", request.getSession().getAttribute("SPRING_SECURITY_CONTEXT"));
+            return ResponseEntity.ok("User logged in successfully.");
+        } catch (Exception e) {
+            log.error("Login failed for user: {}. Error: {}", loginRequest.getUsername(), e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        }
+    }
+
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        request.getSession().invalidate();
+        SecurityContextHolder.clearContext();
+
+        log.info("User logged out successfully.");
+        return ResponseEntity.ok("User logged out successfully.");
+    }
+
 }

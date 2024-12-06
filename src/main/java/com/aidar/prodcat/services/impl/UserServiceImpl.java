@@ -24,44 +24,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UserMapper userMapper;
 
-//    public UserResponseDTO registerNewUser(UserRequestDTO userDtoRequest) {
-//        if (userRepository.existsByEmail(userDtoRequest.getEmail())) {
-//            throw new UserAlreadyExistsException("Login already exists");
-//        }
-//
-//        User user = userMapper.toEntity(userDtoRequest);
-//        user.setPassword(passwordEncoder.encode(userDtoRequest.getPassword()));
-//        user.setActive(true);
-//
-//
-//            user.setRole(Role.USER);
-//
-//
-//        User savedUser = userRepository.save(user);
-//
-//        return userMapper.toResponse(savedUser);
-//    }
-//
-//    @Override
-//    public UserResponseDTO loginUser(UserRequestDTO loginRequest) {
-//        User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new  BadCredentialsException("No user found with this email"));
-//
-//        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-//            throw new BadCredentialsException("Invalid password");
-//        }
-//
-//        if (!user.getActive()== true) {
-//            throw new BadCredentialsException("User account is not active");
-//        }
-//
-//        return userMapper.toResponse(user);
-//    }
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
 
     @Override
     public List<UserResponseDTO> getAllUsers() {
@@ -75,7 +48,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.ROLE_ADMIN);
         User updatedUser = userRepository.save(user);
 
         return userMapper.toResponse(updatedUser);
